@@ -73,7 +73,6 @@ public class SucursalesBancarias {
                     throw new Exception("Debe introducir el nombre de la Sucursal Bancaria.");
                 }
 
-                crearFichero(DIRECTORY, SUCRBANCFILENAME); //Se crea el fichero si no existe
                 
                 fichero = new RandomAccessFile(SUCRBANCFILEPATH, "rw");
                 cadena = fichero.readLine();
