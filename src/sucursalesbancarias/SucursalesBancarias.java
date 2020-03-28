@@ -151,8 +151,6 @@ public class SucursalesBancarias {
                     throw new Exception("Debe introducir un código de asignatura válido.");
                 }
                 
-                crearFichero(DIRECTORY, SUCRBANCFILENAME); //creamos un nuevo fichero si no existe
-                
                 fichero = new RandomAccessFile(SUCRBANCFILEPATH, "r");
                 
                 if(fichero.length() == 0) throw new Exception("El fichero de las sucursales se encuentra vacio.");
