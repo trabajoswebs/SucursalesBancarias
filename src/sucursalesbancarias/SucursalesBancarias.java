@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,77 +29,16 @@ public class SucursalesBancarias {
     
     static Scanner sc = new Scanner(System.in);
     
-    static TreeMap<String, String> tmEEEESSSS = new TreeMap<String, String>();//Map con sucursales bancarias
-     static TreeMap<String, String> tmEEEE = new TreeMap<String, String>();//Map con entidades bancarias
-
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        cargaSucursalesBancarias(tmEEEESSSS);
-        cargaEntidadesBancarias(tmEEEE);
         subMenuSucursalesBancarias();
     }
     
     
-    static void cargaSucursalesBancarias(TreeMap<String, String> tmEEEESSSS){
-        cargaDatos(SUCRBANCFILEPATH, tmEEEESSSS);
-    }
-    
-    static void cargaEntidadesBancarias(TreeMap<String, String> tmEEEE){
-        cargaDatos(ENTBANCARIASFILEPATH, tmEEEE);
-    }
-    
-    
-    /**
-     * Lee los datos que se encuentra en el fichero y los carga en el treeMap
-     * @param filePath
-     */
-    public static void cargaDatos(String filePath, TreeMap<String, String> tm){
-        FileReader fr = null;
-        BufferedReader entrada = null;
-        int indice = 0;
-        String cadena, key, value;
-        
-        try {
-            fr = new FileReader(filePath);
-            entrada = new BufferedReader(fr);
-            
-            cadena = entrada.readLine();
-            
-            while(cadena != null){
-                indice = cadena.indexOf(",");
-                if (indice != -1) {
-                    key = cadena.substring(0, indice).toUpperCase();
-                    value = cadena.substring(indice + 1 ).toUpperCase();
-                    tm.put(key, value);
-                }
-                cadena = entrada.readLine();
-            }
-        }
-        catch (FileNotFoundException fnf) {
-            fnf.printStackTrace();
-        }
-        catch (IOException ioe) {
-            System.out.println("Ha ocurrido una excepción: " + ioe.getMessage());    
-        }
-        catch (Exception e) {
-            System.out.println("Ha ocurrido una excepción: " + e.getMessage());   
-        }finally{
-            try {
-                if (fr != null) {
-                    fr.close();
-                }
-                if(entrada != null){
-                    entrada.close();
-                }
-            } catch (IOException e) {
-                System.out.println("Se ha producido un error al intentar cerrar el fichero: " + e.getMessage());
-            }
-        }
-    }
-    
+   
     /**
      * Se da de alta a un curso en el fichero SucursalesBancarias.txt
      * 
@@ -125,10 +63,7 @@ public class SucursalesBancarias {
                     throw new Exception("Debe introducir el código de la Sucursal Bancaria.");
                 }
                 codEntidadBancaria = codSucurBancaria.substring(0, 4); // Obtenemos el código de la Entidad Bancaria
-                
-                if (! tmEEEE.containsKey(codEntidadBancaria)) { //Comprobamos la existencia del código de la entidad bancaria
-                    throw new Exception("La Entidad Bancaria no existe.");
-                }
+              
                 
                 System.out.println("Introduzca el nombre de la Sucursal Bancaria:");
                 
@@ -156,12 +91,6 @@ public class SucursalesBancarias {
                 cadena = codSucurBancaria.toUpperCase() + "," + nombreSucursalBancaria + "\n";
                 fichero.writeBytes(cadena);
                 
-                if (tmEEEESSSS.containsKey(codSucurBancaria)) { //Actualizamos el TreeMap
-                    tmEEEESSSS.put(codSucurBancaria, "," + nombreSucursalBancaria + "\n"); // añadimos el la sucursal bancaria del treemap
-                } else {
-                    tmEEEESSSS.clear();//Eliminamos todos los datos del TreeMap
-                    cargaSucursalesBancarias(tmEEEESSSS); //volcamos los datos del fichero al TreeMap y lo actualizamos
-                }
                 System.out.println("Se ha añadido correctamente la Sucursal Bancaria en el fichero.");
                 System.out.println("Si desea añadir más Sucursales Bancarias al fichero introduzca la letra: \"S\"");
                 continuar = sc.nextLine();
@@ -222,10 +151,6 @@ public class SucursalesBancarias {
                     throw new Exception("Debe introducir un código de asignatura válido.");
                 }
                 
-                if (! tmEEEESSSS.containsKey(codSucursal)) { //Comprobamos la existencia del código de la sucursal bancaria
-                    throw new Exception("La sucursal no existe.");
-                }
-                
                 fichero = new RandomAccessFile(SUCRBANCFILEPATH, "r");
                 
                 if(fichero.length() == 0) throw new Exception("El fichero de las sucursales se encuentra vacio.");
@@ -251,7 +176,9 @@ public class SucursalesBancarias {
                 
                 ficheroNuevo = new RandomAccessFile(ficheroActualizado, "rw");
                 
-                fichero.seek(0); //Llevamos el puntero al inicio
+                fichero.seek(0); //Llevamos el puntero al inicio                
+                
+                cadena = fichero.readLine();
                 
                 while (cadena != null) {
                     indice = cadena.indexOf(",");
@@ -273,15 +200,7 @@ public class SucursalesBancarias {
                 
                  if (destFichero.delete()) { //Borramos el fichero anterior
                      
-                        if (ficheroOriginal.renameTo(destFichero)) {//Renombramos el fichero
-                            
-                            if (tmEEEESSSS.containsKey(codSucursal)) { //Actualizamos el TreeMap
-                                tmEEEESSSS.remove(codSucursal); // Eliminamos la sucursal bancaria del treemap
-                            }else{
-                                tmEEEESSSS.clear();//Eliminamos todos los datos del TreeMap
-                                cargaSucursalesBancarias(tmEEEESSSS); //Si ocurre un error volcamos los datos del fichero al TreeMap y lo actualizamos
-                            }
-
+                        if (ficheroOriginal.renameTo(destFichero)) {//Renombramos el fichero  
                         System.out.println("Se ha eliminado correctamente la sucursal bancaria  " + codSucursal + " del fichero.");
                         System.out.println("Si desea eliminar más sucursales de la lista introduzca la letra: \"S\"");
 
