@@ -151,6 +151,8 @@ public class SucursalesBancarias {
                     throw new Exception("Debe introducir un código de asignatura válido.");
                 }
                 
+                crearFichero(DIRECTORY, SUCRBANCFILENAME); //creamos un nuevo fichero si no existe
+                
                 fichero = new RandomAccessFile(SUCRBANCFILEPATH, "r");
                 
                 if(fichero.length() == 0) throw new Exception("El fichero de las sucursales se encuentra vacio.");
@@ -255,10 +257,15 @@ public class SucursalesBancarias {
         BufferedReader entrada = null;
         StringBuilder cursos = new StringBuilder();
         
-        try {            
+        try {
+            crearFichero(DIRECTORY, SUCRBANCFILENAME); //creamos un nuevo fichero si no existe
+             
             fr = new FileReader(SUCRBANCFILEPATH);
             entrada = new BufferedReader(fr);
             cadena = entrada.readLine();
+            
+             if(cadena == null) throw new IOException("El fichero se encuentra vacio.");
+            
             while(cadena != null){
                 cursos.append(cadena);
                 cursos.append("\n");
@@ -267,7 +274,7 @@ public class SucursalesBancarias {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SucursalesBancarias.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(SucursalesBancarias.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("\n\tExcepción: " + ex.getMessage());
         } finally {
             try {
                 if (fr != null) {
